@@ -1,0 +1,49 @@
+{% set name = "python-crfsuite" %}
+{% set version = "0.9.1" %}
+{% set sha256 = "367d87d53704120c41852d89cf4b86cc637a79fda1f6b740c79942b5cc21f3c0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - os.h.patch
+
+build:
+  number: 0
+  features:
+    - vc9  # [win and py27]
+    - vc10  # [win and py34]
+    - vc14  # [win and py >= 35]
+  script:
+    - source activate "${CONDA_DEFAULT_ENV}"  # [unix]
+    - python setup.py install --single-version-externally-managed --record record.txt
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - toolchain
+    - msinttypes  # [win]
+    - vc   9  # [win and py27]
+    - vc  10  # [win and py34]
+    - vc  14  # [win and py >= 35]
+  run:
+    - python
+
+test:
+  imports:
+    - pycrfsuite
+
+about:
+  home: https://github.com/scrapinghub/python-crfsuite
+  license: MIT
+  summary: 'Python binding for CRFsuite'
+
+extra:
+  recipe-maintainers:
+    - mcs07

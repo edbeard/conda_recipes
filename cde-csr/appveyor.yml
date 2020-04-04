@@ -1,0 +1,66 @@
+environment:
+  CMD_IN_ENV: "cmd /E:ON /V:ON /C obvci_appveyor_python_build_env.cmd"
+  CONDA_INSTALL_LOCN: "C:\\conda"
+  BINSTAR_TOKEN:
+    secure: ZHXZzhINhF82bnj8OxVfS5wv8b/98jYE3oqwSKmc5I+1JRmvIV0euxnzCeW8qFkI
+
+  matrix:
+    - TARGET_ARCH: "x86"
+      CONDA_PY: "27"
+      PY_CONDITION: "python >=2.7,<3"
+    - TARGET_ARCH: "x86"
+      CONDA_PY: "34"
+      PY_CONDITION: "python >=3.4,<3.5"
+    - TARGET_ARCH: "x86"
+      CONDA_PY: "35"
+      PY_CONDITION: "python >=3.5,<3.6"
+    - TARGET_ARCH: "x86"
+      CONDA_PY: "36"
+      PY_CONDITION: "python >=3.6,<3.7"
+    - TARGET_ARCH: "x64"
+      CONDA_PY: "27"
+      PY_CONDITION: "python >=2.7,<3"
+    - TARGET_ARCH: "x64"
+      CONDA_PY: "34"
+      PY_CONDITION: "python >=3.4,<3.5"
+    - TARGET_ARCH: "x64"
+      CONDA_PY: "35"
+      PY_CONDITION: "python >=3.5,<3.6"
+    - TARGET_ARCH: "x64"
+      CONDA_PY: "36"
+      PY_CONDITION: "python >=3.6,<3.7"
+
+artifacts:
+    - path: 'conda_packages\*.bz2'
+
+platform:
+    - x64
+
+install:
+    - setlocal enableextensions enabledelayedexpansion
+    - cmd: rmdir C:\cygwin /s /q
+    - cmd: set CONDA_NPY=19
+    - appveyor DownloadFile "https://raw.githubusercontent.com/conda-forge/conda-smithy/master/bootstrap-obvious-ci-and-miniconda.py"
+    - cmd: python bootstrap-obvious-ci-and-miniconda.py %CONDA_INSTALL_LOCN% %TARGET_ARCH% 3 --without-obvci
+    - cmd: set CONDA_PY=%CONDA_PY%
+    - cmd: set PATH=%PATH%;%CONDA_INSTALL_LOCN%;%CONDA_INSTALL_LOCN%\scripts
+    - cmd: set PYTHONUNBUFFERED=1
+    - cmd: set CPU_COUNT=2
+    - cmd: conda config --add channels conda-forge
+    - cmd: conda config --add channels chemdataextractor
+    - cmd: conda config --set show_channel_urls true
+    - cmd: conda config --set add_pip_as_python_dependency false
+    - cmd: conda install --yes --quiet -c conda-forge obvious-ci
+    - cmd: conda install --yes --quiet -c conda-forge conda-build-all conda-build==2.0.10
+    - cmd: conda update --yes --quiet -c conda-forge conda
+    - cmd: conda install --yes --quiet -c conda-forge jinja2 anaconda-client
+    - cmd: conda info
+    - cmd: conda config --get
+
+build: false
+
+test_script:
+    - '%CMD_IN_ENV% conda-build-all recipes --inspect-channels chemdataextractor --upload-channels chemdataextractor --matrix-conditions "numpy >=1.10" "%PY_CONDITION%"'
+    - cmd: mkdir conda_packages
+    - cmd: 'copy /Y %CONDA_INSTALL_LOCN%\conda-bld\win-32\*.bz2 conda_packages || cmd /c "exit /b 0"'
+    - cmd: 'copy /Y %CONDA_INSTALL_LOCN%\conda-bld\win-64\*.bz2 conda_packages || cmd /c "exit /b 0"'
