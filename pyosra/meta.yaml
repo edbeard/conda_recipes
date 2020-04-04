@@ -1,0 +1,63 @@
+{% set name = "pyosra" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/edbeard/pyosra.git
+  git_rev: 1.0.0
+
+build:
+  number: 1
+  skip: True  # [win]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - python=3.6
+  host:
+    - python=3.6
+    - gocr
+    - graphicsmagick
+    - ocrad
+    - openbabel=2.4.1
+    - poppler=0.77.0
+    - potrace
+    - tclap
+    - tesseract 3
+    - pybind11
+  run:
+    - python=3.6
+    - gocr
+    - graphicsmagick
+    - ocrad
+    - openbabel=2.4.1
+    - poppler=0.77.0
+    - potrace
+    - tesseract 3
+    - pybind11
+
+
+test:
+  commands:
+    - osra --help
+
+about:
+  home: https://github.com/edbeard/pyosra.git 
+  license: GPL-2.0
+  license_family: GPL
+  license_file: COPYING
+  summary: 'Convert images of chemical structures into computer recognizable formats'
+  description: |
+    OSRA is a utility designed to convert graphical representations of chemical structures and 
+    reactions, as they appear in journal articles, patent documents, textbooks, trade magazines 
+    etc., into SMILES or SD file format- a computer recognizable molecular structure.
+  doc_url: https://sourceforge.net/p/osra/wiki/Home/
+  dev_url: https://sourceforge.net/projects/osra/
+
+extra:
+  recipe-maintainers:
+    - mcs07
+    - edbeard

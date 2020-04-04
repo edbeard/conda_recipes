@@ -1,0 +1,50 @@
+{% set name = "ChemSchematicResolver" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  path: /home/edward/github/ChemSchematicResolver 
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record record.txt
+
+requirements:
+  build:
+    - setuptools
+    - python=3.6
+
+  run:
+    - python=3.6
+    - pillow
+    - matplotlib
+    - scikit-image<0.15
+    - scikit-learn
+    - pytest
+    - tesserocr
+    - cirpy
+    - chemdataextractor-csr
+    - pyosra
+
+
+test:
+  imports:
+    - chemschematicresolver
+
+about: # TODO
+  #home: https://github.com/edbeard/pyosra.git 
+  #license: GPL-2.0
+  #license_family: GPL
+  #license_file: 'LICENSE'
+  #summary: 'Convert images of chemical structures into computer recognizable formats'
+  description: |
+    ChemSchematicResolver
+  #doc_url: https://sourceforge.net/p/osra/wiki/Home/
+  #dev_url: https://sourceforge.net/projects/osra/
+
+extra:
+  recipe-maintainers:
+    - edbeard
